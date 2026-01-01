@@ -1,6 +1,8 @@
 package app.Controller;
 
 import app.Model.UserModel;
+import app.Model.User;
+import app.Util.Session;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -21,23 +23,54 @@ public class UserController {
         }
     }
 
-    public void addUser(String username, String password, String role) {
+    // === LOGIN ===
+    public String login(String username, String password) {
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Username dan Password harus diisi");
-            return;
+            return null;
+        }
+
+        try {
+            User user = model.checkLogin(username, password);
+            if (user != null) {
+                Session.getInstance().login(user);
+                JOptionPane.showMessageDialog(null, "Login Berhasil sebagai " + user.getRole());
+                return user.getRole();
+            } else {
+                JOptionPane.showMessageDialog(null, "Username atau Password salah!");
+                return null;
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal login: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // === REGISTER ===
+    public boolean register(String username, String password, String role) {
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Username dan Password harus diisi");
+            return false;
         }
 
         try {
             if (model.usernameExists(username)) {
                 JOptionPane.showMessageDialog(null, "Username sudah digunakan!");
-                return;
+                return false;
             }
-            
+
             model.insertUser(username, password, role);
-            JOptionPane.showMessageDialog(null, "User berhasil ditambahkan!");
+            JOptionPane.showMessageDialog(null, "Registrasi berhasil! Silakan login.");
+            return true;
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Gagal tambah user: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Gagal registrasi: " + e.getMessage());
+            return false;
         }
+    }
+
+    // kalau butuh buat CRUD user, panggil aja ini :)
+    public void addUser(String username, String password, String role) {
+        register(username, password, role);
     }
 
     public void updateUser(int id, String username, String role) {

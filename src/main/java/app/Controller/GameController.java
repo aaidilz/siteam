@@ -39,14 +39,14 @@ public class GameController {
     }
 
     // ===== UPDATE =====
-    public void updateGame(int id, String name, int price) {
+    public void updateGame(int id, String name, int genreId, int price) {
         if (id <= 0 || name.isEmpty() || price <= 0) {
             JOptionPane.showMessageDialog(null, "Data tidak valid untuk update");
             return;
         }
 
         try {
-            model.updateGame(id, name, price);
+            model.updateGame(id, name, genreId, price);
             JOptionPane.showMessageDialog(null, "Game berhasil diupdate!");
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Gagal update game: " + e.getMessage());
@@ -60,7 +60,8 @@ public class GameController {
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(null, "Yakin ingin menghapus?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(null, "Yakin ingin menghapus?", "Konfirmasi",
+                JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 model.deleteGame(id);

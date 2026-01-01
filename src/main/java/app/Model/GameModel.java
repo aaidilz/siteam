@@ -19,12 +19,13 @@ public class GameModel {
     }
 
     // ===== UPDATE =====
-    public void updateGame(int id, String name, int price) throws SQLException {
-        String sql = "UPDATE game SET name=?, price=? WHERE id=?";
+    public void updateGame(int id, String name, int genreId, int price) throws SQLException {
+        String sql = "UPDATE game SET name=?, genre_id=?, price=? WHERE id=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, name);
-        ps.setInt(2, price);
-        ps.setInt(3, id);
+        ps.setInt(2, genreId);
+        ps.setInt(3, price);
+        ps.setInt(4, id);
         ps.executeUpdate();
     }
 
@@ -39,19 +40,19 @@ public class GameModel {
     // ===== READ =====
     public List<Object[]> getAllGame() throws SQLException {
         List<Object[]> data = new ArrayList<>();
-        String sql = 
-            "SELECT g.id, g.name, ge.name AS genre, g.price " +
-            "FROM game g JOIN genre ge ON g.genre_id = ge.id";
+        String sql = "SELECT g.id, g.name, ge.name AS genre, g.price, g.genre_id " +
+                "FROM game g JOIN genre ge ON g.genre_id = ge.id";
 
         Statement st = DBConnection.configDB().createStatement();
         ResultSet rs = st.executeQuery(sql);
 
         while (rs.next()) {
-            data.add(new Object[]{
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("genre"),
-                rs.getInt("price")
+            data.add(new Object[] {
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("genre"),
+                    rs.getInt("price"),
+                    rs.getInt("genre_id")
             });
         }
         return data;
@@ -61,5 +62,7 @@ public class GameModel {
     public boolean gameExists(String name) throws SQLException {
         String sql = "SELECT name FROM game WHERE name=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setString(1, name);
+        return ps.executeQuery().next();
     }
 }

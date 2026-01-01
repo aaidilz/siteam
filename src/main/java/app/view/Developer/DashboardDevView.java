@@ -17,10 +17,16 @@ public class DashboardDevView extends JFrame {
     JPanel panel = new JPanel(new GridLayout(2, 2, 15, 15));
     panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-    panel.add(new JButton("Manajemen Game"));
-    panel.add(new JButton("Manajemen Genre"));
-    panel.add(new JButton("Manajemen User"));
-    panel.add(new JButton("Logout"));
+    JButton btnGame = new JButton("Manajemen Game");
+    btnGame.addActionListener(e -> new GameView().setVisible(true));
+    panel.add(btnGame);
+
+    JButton btnLogout = new JButton("Logout");
+    btnLogout.addActionListener(e -> {
+      this.dispose();
+      new app.view.Auth.LoginView().setVisible(true);
+    });
+    panel.add(btnLogout);
 
     return panel;
   }
