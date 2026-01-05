@@ -3,13 +3,18 @@ package app.view.Auth;
 import javax.swing.*;
 import java.awt.*;
 
+import app.Controller.UserController;
+
 public class LoginView extends JFrame {
 
   private JTextField txtUsername;
   private JPasswordField txtPassword;
   private JComboBox<String> cmbRole;
+  private UserController controller;
+  private boolean isLoginMode = true;
 
   public LoginView() {
+    this.controller = new UserController();
     setTitle("Game Store - Login");
     setSize(400, 300);
     setLocationRelativeTo(null);
@@ -26,7 +31,7 @@ public class LoginView extends JFrame {
     cmbRole = new JComboBox<>(new String[] { "USER", "DEVELOPER" });
 
     JButton btnLogin = new JButton("Login");
-    JButton btnReset = new JButton("Reset");
+    JButton btnSwitch = new JButton("Switch to Register");
 
     panel.add(new JLabel("Username"));
     panel.add(txtUsername);
@@ -35,25 +40,63 @@ public class LoginView extends JFrame {
     panel.add(new JLabel("Role"));
     panel.add(cmbRole);
     panel.add(btnLogin);
-    panel.add(btnReset);
+    panel.add(btnSwitch);
 
-    btnLogin.addActionListener(e -> prosesLogin());
-    btnReset.addActionListener(e -> resetForm());
+    // Initial state
+    btnLogin.addActionListener(e -> {
+      if (isLoginMode)
+        prosesLogin();
+      else
+        prosesRegister();
+    });
+
+    // Toggle Mode
+    btnSwitch.addActionListener(e -> {
+      isLoginMode = !isLoginMode;
+      if (isLoginMode) {
+        btnLogin.setText("Login");
+        btnSwitch.setText("Switch to Register");
+        setTitle("Game Store - Login");
+      } else {
+        btnLogin.setText("Register");
+        btnSwitch.setText("Switch to Login");
+        setTitle("Game Store - Register");
+      }
+    });
 
     return panel;
   }
 
   private void prosesLogin() {
-    if (txtUsername.getText().length() < 3) {
-      JOptionPane.showMessageDialog(this, "Username minimal 3 karakter");
-      return;
+    String username = txtUsername.getText();
+    String password = new String(txtPassword.getPassword());
+
+    String role = controller.login(username, password);
+    if (role != null) {
+      // Close login window
+      this.dispose();
+
+      // Open appropriate view based on role
+      if (role.equalsIgnoreCase("DEVELOPER")) {
+        new app.view.Developer.DashboardDevView().setVisible(true);
+      } else {
+        new app.view.User.HomeUserView().setVisible(true);
+      }
     }
-    JOptionPane.showMessageDialog(this, "Login berhasil (simulasi)");
   }
 
-  private void resetForm() {
-    txtUsername.setText("");
-    txtPassword.setText("");
-    cmbRole.setSelectedIndex(0);
+  private void prosesRegister() {
+    String username = txtUsername.getText();
+    String password = new String(txtPassword.getPassword());
+    String role = (String) cmbRole.getSelectedItem();
+
+    if (controller.register(username, password, role)) {
+      // Switch back to login mode on success
+      isLoginMode = true;
+      ((JButton) ((JPanel) getContentPane().getComponent(0)).getComponent(6)).setText("Login");
+      ((JButton) ((JPanel) getContentPane().getComponent(0)).getComponent(7)).setText("Switch to Register");
+      setTitle("Game Store - Login");
+    }
   }
+
 }

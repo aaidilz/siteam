@@ -43,10 +43,10 @@ public class UserModel {
         ResultSet rs = st.executeQuery(sql);
 
         while (rs.next()) {
-            data.add(new Object[]{
-                rs.getInt("id"),
-                rs.getString("username"),
-                rs.getString("role")
+            data.add(new Object[] {
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("role")
             });
         }
         return data;
@@ -58,5 +58,17 @@ public class UserModel {
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, username);
         return ps.executeQuery().next();
+    }
+
+    public User checkLogin(String username, String password) throws SQLException {
+        String sql = "SELECT * FROM user WHERE username=? AND password=?";
+        PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setString(1, username);
+        ps.setString(2, password);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return new User(rs.getInt("id"), rs.getString("username"), rs.getString("role"));
+        }
+        return null;
     }
 }
