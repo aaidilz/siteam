@@ -46,9 +46,22 @@ public class AdminDashboardView extends JFrame {
         lblTitle.setForeground(ACCENT_BLUE);
         panel.add(lblTitle, BorderLayout.WEST);
 
+        JPanel rightPanel = new JPanel();
+        rightPanel.setBackground(BG_DARKER);
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
+
+        JButton btnProfile = createStyledButton("Profile", new Color(66, 133, 244));
+
         JButton btnLogout = createStyledButton("Logout", ACCENT_RED);
+
+        btnProfile.addActionListener(e -> new app.view.ProfileView().setVisible(true));
         btnLogout.addActionListener(e -> handleLogout());
-        panel.add(btnLogout, BorderLayout.EAST);
+
+        rightPanel.add(btnProfile);
+        rightPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        rightPanel.add(btnLogout);
+
+        panel.add(rightPanel, BorderLayout.EAST);
 
         return panel;
     }

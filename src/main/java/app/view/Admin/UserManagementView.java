@@ -204,13 +204,22 @@ public class UserManagementView extends JPanel {
             return;
         }
         int id = (int) model.getValueAt(r, 0);
-        String username = (String) model.getValueAt(r, 1);
-        String role = (String) model.getValueAt(r, 2);
+        String currentUsername = (String) model.getValueAt(r, 1);
+        String currentRole = (String) model.getValueAt(r, 2);
 
-        JTextField txtUsername = new JTextField(username);
+        // Prevent modifying own account role/status if logged in
+        User loggedInUser = Session.getInstance().getUser();
+        if (loggedInUser != null && loggedInUser.getId() == id) {
+            JOptionPane.showMessageDialog(this,
+                    "Anda tidak dapat mengedit akun Anda sendiri dari sini.\nSilakan gunakan menu profil jika tersedia.",
+                    "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JTextField txtUsername = new JTextField(currentUsername);
         JPasswordField txtPassword = new JPasswordField();
         JComboBox<String> cmbRole = new JComboBox<>(new String[] { "USER", "DEVELOPER", "ADMIN" });
-        cmbRole.setSelectedItem(role);
+        cmbRole.setSelectedItem(currentRole);
 
         // Style components
         txtUsername.setBackground(BG_TABLE);
@@ -243,12 +252,29 @@ public class UserManagementView extends JPanel {
         if (ok == JOptionPane.OK_OPTION) {
             String newUsername = txtUsername.getText().trim();
             String newRole = (String) cmbRole.getSelectedItem();
+
             if (newUsername.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Username tidak boleh kosong");
                 return;
             }
-            controller.updateUser(id, newUsername, newRole);
-            refreshData();
+
+            // Check if username changed and if it conflicts with existing users
+            // Note: Ideally controller should have a checkUsernameExists method that
+            // excludes current ID
+            // For now we assume controller handles basic updates, but we can prevent
+            // obvious duplicates if we had the list
+
+            // Attempt to update user details
+            boolean success = controller.updateUser(id, newUsername, newRole);
+
+            if (success) {
+                // If password is not empty, update password too
+                String newPassword = new String(txtPassword.getPassword());
+                if (!newPassword.isEmpty()) {
+                    controller.updateUserPassword(id, newPassword);
+                }
+                refreshData();
+            }
         }
     }
 

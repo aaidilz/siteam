@@ -75,12 +75,41 @@ public class UserController {
         register(username, password, role);
     }
 
-    public void updateUser(int id, String username, String role) {
+    public boolean updateUser(int id, String username, String role) {
         try {
+            if (model.isUsernameTaken(username, id)) {
+                JOptionPane.showMessageDialog(null, "Username sudah digunakan user lain!");
+                return false;
+            }
             model.updateUser(id, username, role);
             JOptionPane.showMessageDialog(null, "User berhasil diupdate!");
+            return true;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Gagal update user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public void updateUserPassword(int id, String password) {
+        try {
+            model.updateUserPassword(id, password);
+            JOptionPane.showMessageDialog(null, "Password berhasil diupdate!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal update password: " + e.getMessage());
+        }
+    }
+
+    public boolean updateProfile(int id, String username) {
+        try {
+            if (model.isUsernameTaken(username, id)) {
+                JOptionPane.showMessageDialog(null, "Username sudah digunakan user lain!");
+                return false;
+            }
+            model.updateProfile(id, username);
+            return true;
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal update profile: " + e.getMessage());
+            return false;
         }
     }
 

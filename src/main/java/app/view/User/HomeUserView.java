@@ -116,14 +116,18 @@ public class HomeUserView extends JFrame {
     lblSaldo.setForeground(ACCENT_GREEN);
 
     JButton btnTopUp = createStyledButton("Top Up", ACCENT_GREEN);
+    JButton btnProfile = createStyledButton("Profile", BTN_BLUE);
     JButton btnLogout = createStyledButton("Logout", ACCENT_RED);
 
     btnTopUp.addActionListener(e -> handleTopUp());
+    btnProfile.addActionListener(e -> new app.view.ProfileView().setVisible(true));
     btnLogout.addActionListener(e -> handleLogout());
 
     rightPanel.add(lblSaldo);
     rightPanel.add(Box.createRigidArea(new Dimension(15, 0)));
     rightPanel.add(btnTopUp);
+    rightPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+    rightPanel.add(btnProfile);
     rightPanel.add(Box.createRigidArea(new Dimension(10, 0)));
     rightPanel.add(btnLogout);
 

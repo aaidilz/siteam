@@ -23,11 +23,27 @@ public class UserModel {
 
     // ===== UPDATE =====
     public void updateUser(int id, String username, String role) throws SQLException {
-        String sql = "UPDATE ref_user SET username=?, saldo=?, role=? WHERE id=?";
+        String sql = "UPDATE ref_user SET username=?, role=? WHERE id=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, username);
-        ps.setString(3, role);
-        ps.setInt(4, id);
+        ps.setString(2, role);
+        ps.setInt(3, id);
+        ps.executeUpdate();
+    }
+
+    public void updateUserPassword(int id, String password) throws SQLException {
+        String sql = "UPDATE ref_user SET password=? WHERE id=?";
+        PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setString(1, password);
+        ps.setInt(2, id);
+        ps.executeUpdate();
+    }
+
+    public void updateProfile(int id, String username) throws SQLException {
+        String sql = "UPDATE ref_user SET username=? WHERE id=?";
+        PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setString(1, username);
+        ps.setInt(2, id);
         ps.executeUpdate();
     }
 
@@ -61,6 +77,14 @@ public class UserModel {
         String sql = "SELECT username FROM ref_user WHERE username=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, username);
+        return ps.executeQuery().next();
+    }
+
+    public boolean isUsernameTaken(String username, int excludeId) throws SQLException {
+        String sql = "SELECT id FROM ref_user WHERE username=? AND id != ?";
+        PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setString(1, username);
+        ps.setInt(2, excludeId);
         return ps.executeQuery().next();
     }
 
