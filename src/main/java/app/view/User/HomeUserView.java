@@ -1,15 +1,25 @@
-package app.view.User;
+package app.View.User;
+
+import java.awt.BorderLayout;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import app.Controller.GameController;
 import app.Controller.TransactionController;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 
 public class HomeUserView extends JFrame {
 
   private JTable table;
+  private JLabel lblSaldo;
   private DefaultTableModel model;
   private GameController gameController;
   private TransactionController transactionController;
@@ -22,11 +32,13 @@ public class HomeUserView extends JFrame {
     setSize(800, 500);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    add(createPanel());
+    this.setLayout(new BorderLayout());
+    add(createSaldoPanel(), BorderLayout.NORTH);
+    add(createMainPanel(), BorderLayout.CENTER);
     refreshData();
   }
 
-  private JPanel createPanel() {
+  private JPanel createMainPanel() {
     JPanel panel = new JPanel(new BorderLayout(10, 10));
     panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
@@ -62,7 +74,7 @@ public class HomeUserView extends JFrame {
 
     btnLogout.addActionListener(e -> {
       this.dispose();
-      new app.view.Auth.LoginView().setVisible(true);
+      new app.View.Auth.LoginView().setVisible(true);
     });
 
     JPanel bottom = new JPanel();
@@ -73,7 +85,37 @@ public class HomeUserView extends JFrame {
     return panel;
   }
 
+  private JPanel createSaldoPanel() {
+    JPanel panel = new JPanel(new BorderLayout());
+    lblSaldo = new JLabel("Saldo : " + transactionController.getUserSaldo());
+    panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    JButton btnTopUp = new JButton("Top Up Saldo");
+
+    btnTopUp.addActionListener(e -> {
+      try {
+        int amount = Integer.parseInt(JOptionPane.showInputDialog(this, "Masukkan jumlah top-up:"));
+        if (amount <= 0) {
+          JOptionPane.showMessageDialog(this, "Jumlah top-up harus lebih dari 0!");
+          return;
+        }
+        if (amount > 0) {
+          transactionController.buyTopUp(amount);
+          refreshData();
+        } else {
+          JOptionPane.showMessageDialog(this, "Jumlah top-up tidak valid!");
+        }
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Input tidak valid!");
+      }
+
+    });
+    panel.add(lblSaldo, BorderLayout.WEST);
+    panel.add(btnTopUp, BorderLayout.EAST);
+    return panel;
+  }
+
   private void refreshData() {
+    lblSaldo.setText("Saldo : " + transactionController.getUserSaldo());
     model.setRowCount(0);
     List<Object[]> games = gameController.getAllGames();
     if (games != null) {

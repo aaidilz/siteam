@@ -1,15 +1,19 @@
 package app.Model;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import app.Database.DBConnection;
 
 public class GameModel {
 
     // ===== CREATE =====
     public void insertGame(String name, int genreId, int developerId, int price) throws SQLException {
-        String sql = "INSERT INTO game (name, genre_id, developer_id, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO mst_game (name, genre_id, developer_id, price) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, name);
         ps.setInt(2, genreId);
@@ -20,7 +24,7 @@ public class GameModel {
 
     // ===== UPDATE =====
     public void updateGame(int id, String name, int genreId, int price) throws SQLException {
-        String sql = "UPDATE game SET name=?, genre_id=?, price=? WHERE id=?";
+        String sql = "UPDATE mst_game SET name=?, genre_id=?, price=? WHERE id=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, name);
         ps.setInt(2, genreId);
@@ -31,7 +35,7 @@ public class GameModel {
 
     // ===== DELETE =====
     public void deleteGame(int id) throws SQLException {
-        String sql = "DELETE FROM game WHERE id=?";
+        String sql = "DELETE FROM mst_game WHERE id=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -41,7 +45,7 @@ public class GameModel {
     public List<Object[]> getAllGame() throws SQLException {
         List<Object[]> data = new ArrayList<>();
         String sql = "SELECT g.id, g.name, ge.name AS genre, g.price, g.genre_id " +
-                "FROM game g JOIN genre ge ON g.genre_id = ge.id";
+                "FROM mst_game g JOIN ref_genre ge ON g.genre_id = ge.id";
 
         Statement st = DBConnection.configDB().createStatement();
         ResultSet rs = st.executeQuery(sql);
@@ -60,7 +64,7 @@ public class GameModel {
 
     // ===== VALIDASI =====
     public boolean gameExists(String name) throws SQLException {
-        String sql = "SELECT name FROM game WHERE name=?";
+        String sql = "SELECT name FROM mst_game WHERE name=?";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setString(1, name);
         return ps.executeQuery().next();
