@@ -8,7 +8,7 @@ import java.awt.*;
 public class AdminDashboardView extends JFrame {
 
     public AdminDashboardView() {
-        setTitle("Dashboard Admin - Game Store");
+        setTitle("Admin Dashboard - Game Store");
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -17,58 +17,28 @@ public class AdminDashboardView extends JFrame {
     }
 
     private void initUI() {
-        setLayout(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        headerPanel.setBackground(new Color(50, 60, 70)); 
+        // Tab Panel
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Statistics", new StatistikView ());
+        tabbedPane.addTab("User Management", new UserManagementView());
+        tabbedPane.addTab("Genre Management", new GenreManagementView());
 
-        JLabel lblTitle = new JLabel("Admin Dashboard");
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTitle.setForeground(Color.WHITE);
+        mainPanel.add(tabbedPane, BorderLayout.CENTER);
 
+        // Bottom Panel with Logout
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnLogout = new JButton("Logout");
-        btnLogout.setBackground(new Color(220, 53, 69)); 
-        btnLogout.setForeground(Color.WHITE);
-        btnLogout.setFocusPainted(false);
         btnLogout.addActionListener(e -> {
             Session.getInstance().logout();
             new LoginView().setVisible(true);
             dispose();
         });
+        bottomPanel.add(btnLogout);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        headerPanel.add(lblTitle, BorderLayout.WEST);
-        headerPanel.add(btnLogout, BorderLayout.EAST);
-
-        add(headerPanel, BorderLayout.NORTH);
-
-
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("User Management", createUserManagementPanel());
-        tabbedPane.addTab("Game Management", createGameManagementPanel());
-        tabbedPane.addTab("Transaction History", createTransactionHistoryPanel());
-        tabbedPane.addTab("Statistics", createStatisticsPanel());
-
-        add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    private JPanel createUserManagementPanel() {
-        return new UserManagementView();
-    }
-
-    private JPanel createGameManagementPanel() {
-        return new GenreManagementView();
-    }
-
-    private JPanel createTransactionHistoryPanel() {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Transaction History Module (Coming Soon)"));
-        return panel;
-    }
-
-    private JPanel createStatisticsPanel() {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("Statistics Module (Coming Soon)"));
-        return panel;
+        add(mainPanel);
     }
 }
