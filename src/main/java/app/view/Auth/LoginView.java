@@ -1,4 +1,4 @@
-package app.view.Auth;
+package app.View.Auth;
 
 import java.awt.GridLayout;
 
@@ -90,7 +90,7 @@ public class LoginView extends JFrame {
       } else if (role.equalsIgnoreCase("ADMIN")) {
         new app.View.Admin.AdminDashboardView().setVisible(true);
       } else {
-        new app.view.User.HomeUserView().setVisible(true);
+        new app.View.User.HomeUserView().setVisible(true);
       }
     }
   }

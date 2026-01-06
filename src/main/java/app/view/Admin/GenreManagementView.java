@@ -6,7 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class GenreManagementView extends JFrame {
+public class GenreManagementView extends JPanel {
     private JTable table;
     private DefaultTableModel model;
     private GenreController controller;
@@ -14,20 +14,33 @@ public class GenreManagementView extends JFrame {
     public GenreManagementView() {
         this.controller = new GenreController();
         
-        setTitle("Manajemen Genre");
-        setSize(500, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
         initUI();
         loadData();
     }
 
     private void initUI() {
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Table
+        JPanel toolbarPanel = new JPanel(new BorderLayout());
+        
+
+        JPanel leftBtnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JButton btnAdd = new JButton("Tambah");
+        JButton btnEdit = new JButton("Edit");
+        JButton btnDelete = new JButton("Hapus");
+        JButton btnRefresh = new JButton("Refresh");
+        
+        leftBtnPanel.add(btnAdd);
+        leftBtnPanel.add(btnEdit);
+        leftBtnPanel.add(btnDelete);
+        leftBtnPanel.add(btnRefresh);
+
+        toolbarPanel.add(leftBtnPanel, BorderLayout.WEST);
+        
+        add(toolbarPanel, BorderLayout.NORTH);
+
+
         String[] columns = {"ID", "Nama Genre"};
         model = new DefaultTableModel(columns, 0) {
             @Override
@@ -37,28 +50,13 @@ public class GenreManagementView extends JFrame {
         };
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
-        // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton btnAdd = new JButton("Tambah");
-        JButton btnEdit = new JButton("Ubah");
-        JButton btnDelete = new JButton("Hapus");
-        JButton btnRefresh = new JButton("Refresh");
-
+  
         btnAdd.addActionListener(e -> showAddDialog());
         btnEdit.addActionListener(e -> showEditDialog());
         btnDelete.addActionListener(e -> deleteGenre());
         btnRefresh.addActionListener(e -> loadData());
-
-        buttonPanel.add(btnAdd);
-        buttonPanel.add(btnEdit);
-        buttonPanel.add(btnDelete);
-        buttonPanel.add(btnRefresh);
-
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        add(mainPanel);
     }
 
     private void loadData() {

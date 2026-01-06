@@ -8,8 +8,8 @@ import java.awt.*;
 public class AdminDashboardView extends JFrame {
 
     public AdminDashboardView() {
-        setTitle("Admin Dashboard");
-        setSize(400, 300);
+        setTitle("Dashboard Admin - Game Store");
+        setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -17,36 +17,58 @@ public class AdminDashboardView extends JFrame {
     }
 
     private void initUI() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 1, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout());
 
-        JLabel lblWelcome = new JLabel("Welcome, Admin", SwingConstants.CENTER);
-        lblWelcome.setFont(new Font("Arial", Font.BOLD, 18));
-        
-        JButton btnUserManagement = new JButton("Manajemen User");
-        JButton btnGenreManagement = new JButton("Manajemen Genre");
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        headerPanel.setBackground(new Color(50, 60, 70)); 
+
+        JLabel lblTitle = new JLabel("Admin Dashboard");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(Color.WHITE);
+
         JButton btnLogout = new JButton("Logout");
-
-        btnUserManagement.addActionListener(e -> {
-            new UserManagementView().setVisible(true);
-        });
-
-        btnGenreManagement.addActionListener(e -> {
-            new GenreManagementView().setVisible(true);
-        });
-
+        btnLogout.setBackground(new Color(220, 53, 69)); 
+        btnLogout.setForeground(Color.WHITE);
+        btnLogout.setFocusPainted(false);
         btnLogout.addActionListener(e -> {
             Session.getInstance().logout();
             new LoginView().setVisible(true);
             dispose();
         });
 
-        panel.add(lblWelcome);
-        panel.add(btnUserManagement);
-        panel.add(btnGenreManagement);
-        panel.add(btnLogout);
+        headerPanel.add(lblTitle, BorderLayout.WEST);
+        headerPanel.add(btnLogout, BorderLayout.EAST);
 
-        add(panel);
+        add(headerPanel, BorderLayout.NORTH);
+
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("User Management", createUserManagementPanel());
+        tabbedPane.addTab("Game Management", createGameManagementPanel());
+        tabbedPane.addTab("Transaction History", createTransactionHistoryPanel());
+        tabbedPane.addTab("Statistics", createStatisticsPanel());
+
+        add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    private JPanel createUserManagementPanel() {
+        return new UserManagementView();
+    }
+
+    private JPanel createGameManagementPanel() {
+        return new GenreManagementView();
+    }
+
+    private JPanel createTransactionHistoryPanel() {
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Transaction History Module (Coming Soon)"));
+        return panel;
+    }
+
+    private JPanel createStatisticsPanel() {
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Statistics Module (Coming Soon)"));
+        return panel;
     }
 }

@@ -1,4 +1,4 @@
-package app.view.User;
+package app.View.User;
 
 import java.awt.BorderLayout;
 import java.util.List;
@@ -73,7 +73,7 @@ public class HomeUserView extends JFrame {
 
     btnLogout.addActionListener(e -> {
       this.dispose();
-      new app.view.Auth.LoginView().setVisible(true);
+      new app.View.Auth.LoginView().setVisible(true);
     });
 
     JPanel bottom = new JPanel();

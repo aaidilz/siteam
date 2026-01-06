@@ -9,47 +9,52 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class UserManagementView extends JFrame {
+public class UserManagementView extends JPanel {
     private JTable table;
     private DefaultTableModel model;
     private UserController controller;
 
     public UserManagementView() {
         this.controller = new UserController();
-        setTitle("User Management");
-        setSize(600, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        add(createPanel());
+        initUI();
         refreshData();
     }
 
-    private JPanel createPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10,10));
+    private void initUI() {
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel toolbarPanel = new JPanel(new BorderLayout());
+        
+
+        JPanel leftBtnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JButton btnAdd = new JButton("Tambah");
+        JButton btnEdit = new JButton("Edit");
+        JButton btnDelete = new JButton("Hapus");
+        JButton btnRefresh = new JButton("Refresh");
+        
+        leftBtnPanel.add(btnAdd);
+        leftBtnPanel.add(btnEdit);
+        leftBtnPanel.add(btnDelete);
+        leftBtnPanel.add(btnRefresh);
+
+        toolbarPanel.add(leftBtnPanel, BorderLayout.WEST);
+        
+        add(toolbarPanel, BorderLayout.NORTH);
+
+
         model = new DefaultTableModel(new Object[] { "ID", "Username", "Role" }, 0) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         table = new JTable(model);
-        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(table);
+        add(scrollPane, BorderLayout.CENTER);
 
-        JButton btnEdit = new JButton("Edit");
-        JButton btnDelete = new JButton("Delete");
-        JButton btnRefresh = new JButton("Refresh");
-        JButton btnClose = new JButton("Close");
 
+        btnAdd.addActionListener(e -> onAdd());
         btnEdit.addActionListener(e -> onEdit());
         btnDelete.addActionListener(e -> onDelete());
         btnRefresh.addActionListener(e -> refreshData());
-        btnClose.addActionListener(e -> this.dispose());
-
-        JPanel bottom = new JPanel();
-        bottom.add(btnEdit);
-        bottom.add(btnDelete);
-        bottom.add(btnRefresh);
-        bottom.add(btnClose);
-        panel.add(bottom, BorderLayout.SOUTH);
-
-        return panel;
     }
 
     private void refreshData() {
@@ -63,6 +68,31 @@ public class UserManagementView extends JFrame {
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Gagal memuat user: " + ex.getMessage());
+        }
+    }
+
+    private void onAdd() {
+        JTextField txtUsername = new JTextField();
+        JPasswordField txtPassword = new JPasswordField();
+        JComboBox<String> cmbRole = new JComboBox<>(new String[] { "USER", "DEVELOPER", "ADMIN" });
+
+        JPanel p = new JPanel(new GridLayout(3, 2, 5, 5));
+        p.add(new JLabel("Username:")); p.add(txtUsername);
+        p.add(new JLabel("Password:")); p.add(txtPassword);
+        p.add(new JLabel("Role:")); p.add(cmbRole);
+
+        int ok = JOptionPane.showConfirmDialog(this, p, "Tambah User", JOptionPane.OK_CANCEL_OPTION);
+        if (ok == JOptionPane.OK_OPTION) {
+            String username = txtUsername.getText().trim();
+            String password = new String(txtPassword.getPassword());
+            String role = (String) cmbRole.getSelectedItem();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Username dan Password harus diisi");
+                return;
+            }
+            controller.addUser(username, password, role);
+            refreshData();
         }
     }
 
@@ -97,21 +127,13 @@ public class UserManagementView extends JFrame {
         int id = (int) model.getValueAt(r, 0);
         User current = Session.getInstance().getUser();
 
-        // Proteksi: Admin tidak bisa menghapus akunnya sendiri yang sedang login
+        
         if (current != null && "ADMIN".equalsIgnoreCase(current.getRole()) && current.getId() == id) {
             JOptionPane.showMessageDialog(this, "Admin tidak dapat menghapus akun yang sedang login");
             return;
         }
-
-        int conf = JOptionPane.showConfirmDialog(this, "Hapus user ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (conf == JOptionPane.YES_OPTION) {
-            controller.deleteUser(id);
-            refreshData();
-        }
-    }
-
-    // Untuk membuka view ini langsung (opsional)
-    public static void open() {
-        SwingUtilities.invokeLater(() -> new UserManagementView().setVisible(true));
+        
+        controller.deleteUser(id);
+        refreshData();
     }
 }
