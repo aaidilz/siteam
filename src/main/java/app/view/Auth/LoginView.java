@@ -36,7 +36,7 @@ public class LoginView extends JFrame {
 
     txtUsername = new JTextField();
     txtPassword = new JPasswordField();
-    cmbRole = new JComboBox<>(new String[] { "USER", "DEVELOPER" });
+    cmbRole = new JComboBox<>(new String[] { "USER", "DEVELOPER", "ADMIN" });
 
     JButton btnLogin = new JButton("Login");
     JButton btnSwitch = new JButton("Switch to Register");
@@ -86,7 +86,9 @@ public class LoginView extends JFrame {
 
       // Open appropriate view based on role
       if (role.equalsIgnoreCase("DEVELOPER")) {
-        new app.view.Developer.DashboardDevView().setVisible(true);
+        new app.View.Developer.DashboardDevView().setVisible(true);
+      } else if (role.equalsIgnoreCase("ADMIN")) {
+        new app.View.Admin.AdminDashboardView().setVisible(true);
       } else {
         new app.view.User.HomeUserView().setVisible(true);
       }

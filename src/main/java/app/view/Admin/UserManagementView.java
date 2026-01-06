@@ -1,4 +1,4 @@
-package app.view.Admin;
+package app.View.Admin;
 
 import app.Controller.UserController;
 import app.Util.Session;
