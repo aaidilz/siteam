@@ -42,4 +42,16 @@ public class TransactionModel {
         }
         return ownedIds;
     }
+
+    public int getGameDeveloperId(int gameId) throws SQLException {
+        String sql = "SELECT developer_id FROM mst_game WHERE id=?";
+        PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setInt(1, gameId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("developer_id");
+        } else {
+            throw new SQLException("Game not found");
+        }
+    }
 }

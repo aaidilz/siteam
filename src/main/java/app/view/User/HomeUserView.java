@@ -1,4 +1,4 @@
-package app.View.User;
+package app.view.User;
 
 import java.awt.BorderLayout;
 import java.util.List;
@@ -64,8 +64,7 @@ public class HomeUserView extends JFrame {
 
         // Execute Purchase
         if (transactionController.buyGame(gameId, price)) {
-          // Determine visuals if needed (e.g. mark as owned).
-          // ideally refresh table to show owned status if we had that column.
+          refreshData();
         }
       } else {
         JOptionPane.showMessageDialog(this, "Pilih game yang ingin dibeli");
@@ -74,7 +73,7 @@ public class HomeUserView extends JFrame {
 
     btnLogout.addActionListener(e -> {
       this.dispose();
-      new app.View.Auth.LoginView().setVisible(true);
+      new app.view.Auth.LoginView().setVisible(true);
     });
 
     JPanel bottom = new JPanel();

@@ -44,6 +44,9 @@ public class TransactionController {
 
             modelTransaction.insertTransaction(userId, gameId, price, true);
             modelUser.updateUserSaldo(userId, currentSaldo - price);
+            int developerID = modelTransaction.getGameDeveloperId(gameId);
+            int developerSaldo = modelUser.getUserSaldo(developerID);
+            modelUser.updateUserSaldo(developerID, developerSaldo + price);
             JOptionPane.showMessageDialog(null, "Pembelian berhasil!");
             return true;
         } catch (SQLException e) {

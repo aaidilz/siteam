@@ -1,4 +1,4 @@
-package app.View.Developer;
+package app.view.Developer;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -110,7 +110,7 @@ public class GameView extends JFrame {
       for (Window w : Window.getWindows()) {
         w.dispose();
       }
-      new app.View.Auth.LoginView().setVisible(true);
+      new app.view.Auth.LoginView().setVisible(true);
     });
 
     toolbar.add(btnAdd);

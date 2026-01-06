@@ -1,4 +1,4 @@
-package app.View.Auth;
+package app.view.Auth;
 
 import java.awt.GridLayout;
 
@@ -86,9 +86,9 @@ public class LoginView extends JFrame {
 
       // Open appropriate view based on role
       if (role.equalsIgnoreCase("DEVELOPER")) {
-        new app.View.Developer.DashboardDevView().setVisible(true);
+        new app.view.Developer.DashboardDevView().setVisible(true);
       } else {
-        new app.View.User.HomeUserView().setVisible(true);
+        new app.view.User.HomeUserView().setVisible(true);
       }
     }
   }
