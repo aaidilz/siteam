@@ -1,7 +1,15 @@
-package app.view.Auth;
+package app.View.Auth;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import app.Controller.UserController;
 
@@ -78,9 +86,9 @@ public class LoginView extends JFrame {
 
       // Open appropriate view based on role
       if (role.equalsIgnoreCase("DEVELOPER")) {
-        new app.view.Developer.DashboardDevView().setVisible(true);
+        new app.View.Developer.DashboardDevView().setVisible(true);
       } else {
-        new app.view.User.HomeUserView().setVisible(true);
+        new app.View.User.HomeUserView().setVisible(true);
       }
     }
   }

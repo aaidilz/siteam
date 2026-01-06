@@ -1,7 +1,11 @@
-package app.view.Developer;
+package app.View.Developer;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class DashboardDevView extends JFrame {
 
@@ -24,7 +28,7 @@ public class DashboardDevView extends JFrame {
     JButton btnLogout = new JButton("Logout");
     btnLogout.addActionListener(e -> {
       this.dispose();
-      new app.view.Auth.LoginView().setVisible(true);
+      new app.View.Auth.LoginView().setVisible(true);
     });
     panel.add(btnLogout);
 

@@ -1,9 +1,11 @@
 package app.Controller;
 
-import app.Model.GameModel;
 import java.sql.SQLException;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
+import app.Model.GameModel;
 
 public class GameController {
     private GameModel model;

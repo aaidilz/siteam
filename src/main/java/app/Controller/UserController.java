@@ -1,11 +1,13 @@
 package app.Controller;
 
-import app.Model.UserModel;
-import app.Model.User;
-import app.Util.Session;
 import java.sql.SQLException;
 import java.util.List;
+
 import javax.swing.JOptionPane;
+
+import app.Model.User;
+import app.Model.UserModel;
+import app.Util.Session;
 
 public class UserController {
     private UserModel model;

@@ -1,13 +1,28 @@
-package app.view.Developer;
+package app.View.Developer;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Window;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.table.DefaultTableModel;
 
 import app.Controller.GameController;
 import app.Controller.GenreController;
 import app.Util.Session;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
 
 public class GameView extends JFrame {
   private JTable table;
@@ -95,7 +110,7 @@ public class GameView extends JFrame {
       for (Window w : Window.getWindows()) {
         w.dispose();
       }
-      new app.view.Auth.LoginView().setVisible(true);
+      new app.View.Auth.LoginView().setVisible(true);
     });
 
     toolbar.add(btnAdd);
