@@ -33,7 +33,7 @@ public class AdminDashboardView extends JFrame {
         });
 
         btnGenreManagement.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Fitur Manajemen Genre belum tersedia.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            new GenreManagementView().setVisible(true);
         });
 
         btnLogout.addActionListener(e -> {
