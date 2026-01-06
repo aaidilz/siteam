@@ -230,7 +230,7 @@ public class GameView extends JFrame {
 
   private void refreshData() {
     tableModel.setRowCount(0);
-    List<Object[]> games = gameController.getAllGames();
+    List<Object[]> games = gameController.getGamesByCurrentDeveloper();
     if (games != null) {
       for (Object[] game : games) {
         tableModel.addRow(game);

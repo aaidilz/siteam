@@ -62,10 +62,11 @@ public class TransactionModel {
     public List<Object[]> getOwnedGamesWithDetails(int userId) throws SQLException {
         List<Object[]> games = new ArrayList<>();
         String sql = "SELECT g.id, g.name, ge.name AS genre, g.price, " +
-                "COALESCE(t.is_played, FALSE) AS is_played " +
+                "COALESCE(t.is_played, FALSE) AS is_played, u.username AS developer " +
                 "FROM tr_transaction t " +
                 "JOIN mst_game g ON CONCAT('GM_', g.id) = t.item_id " +
                 "JOIN ref_genre ge ON g.genre_id = ge.id " +
+                "JOIN ref_user u ON g.developer_id = u.id " +
                 "WHERE t.user_id = ? AND t.item_id LIKE 'GM_%'";
         PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
         ps.setInt(1, userId);
@@ -75,6 +76,7 @@ public class TransactionModel {
                     rs.getInt("id"),
                     rs.getString("name"),
                     rs.getString("genre"),
+                    rs.getString("developer"),
                     rs.getInt("price"),
                     rs.getBoolean("is_played")
             });

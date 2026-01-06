@@ -94,7 +94,7 @@ public class LibraryView extends JPanel {
     }
 
     private JScrollPane createTablePanel() {
-        String[] columns = { "ID", "Nama Game", "Genre", "Harga", "Status" };
+        String[] columns = { "ID", "Nama Game", "Genre", "Developer", "Harga", "Status" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -123,7 +123,7 @@ public class LibraryView extends JPanel {
         table.getColumnModel().getColumn(0).setWidth(0);
 
         // Custom renderer for Status column
-        table.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+        table.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
@@ -144,7 +144,7 @@ public class LibraryView extends JPanel {
         });
 
         // Price column renderer
-        table.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+        table.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
@@ -247,11 +247,12 @@ public class LibraryView extends JPanel {
             int id = (int) game[0];
             String name = (String) game[1];
             String genre = (String) game[2];
-            int price = (int) game[3];
-            boolean isPlayed = (boolean) game[4];
+            String developer = (String) game[3];
+            int price = (int) game[4];
+            boolean isPlayed = (boolean) game[5];
             String status = isPlayed ? "Played" : "Not Played";
 
-            model.addRow(new Object[] { id, name, genre, price, status });
+            model.addRow(new Object[] { id, name, genre, developer, price, status });
         }
 
         updateGameCount(games.size());

@@ -147,7 +147,7 @@ public class HomeUserView extends JFrame {
     panel.add(headerPanel, BorderLayout.NORTH);
 
     // Store Table
-    String[] columns = { "ID", "Nama Game", "Genre", "Harga", "Status" };
+    String[] columns = { "ID", "Nama Game", "Genre", "Developer", "Harga", "Status" };
     storeModel = new DefaultTableModel(columns, 0) {
       @Override
       public boolean isCellEditable(int row, int column) {
@@ -176,7 +176,7 @@ public class HomeUserView extends JFrame {
     storeTable.getColumnModel().getColumn(0).setWidth(0);
 
     // Price column renderer
-    storeTable.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+    storeTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
       @Override
       public java.awt.Component getTableCellRendererComponent(JTable table, Object value,
           boolean isSelected, boolean hasFocus, int row, int column) {
@@ -192,7 +192,7 @@ public class HomeUserView extends JFrame {
     });
 
     // Status column renderer (Owned/Available)
-    storeTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+    storeTable.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
       @Override
       public java.awt.Component getTableCellRendererComponent(JTable table, Object value,
           boolean isSelected, boolean hasFocus, int row, int column) {
@@ -295,8 +295,8 @@ public class HomeUserView extends JFrame {
 
     int gameId = (int) storeModel.getValueAt(selectedRow, 0);
     String gameName = (String) storeModel.getValueAt(selectedRow, 1);
-    int price = (int) storeModel.getValueAt(selectedRow, 3);
-    String status = (String) storeModel.getValueAt(selectedRow, 4);
+    int price = (int) storeModel.getValueAt(selectedRow, 4);
+    String status = (String) storeModel.getValueAt(selectedRow, 5);
 
     // Check if already owned
     if ("Owned".equals(status)) {
@@ -375,17 +375,18 @@ public class HomeUserView extends JFrame {
     List<Object[]> games = gameController.getAllGames();
     if (games != null) {
       for (Object[] game : games) {
-        // game: id, name, genre, price, genre_id
+        // game: id, name, genre, price, genre_id, developer
         int gameId = (int) game[0];
         String name = (String) game[1];
         String genre = (String) game[2];
         int price = (int) game[3];
+        String developer = (String) game[5];
 
         // Check if owned
         boolean isOwned = transactionController.isGameOwned(gameId);
         String status = isOwned ? "Owned" : "Available";
 
-        storeModel.addRow(new Object[] { gameId, name, genre, price, status });
+        storeModel.addRow(new Object[] { gameId, name, genre, developer, price, status });
       }
     }
   }
