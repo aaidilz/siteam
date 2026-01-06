@@ -1,4 +1,4 @@
-package app.View.User;
+package app.view.User;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
