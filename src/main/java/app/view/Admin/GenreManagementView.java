@@ -1,11 +1,24 @@
 package app.view.Admin;
 
-import app.Controller.GenreController;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+
+import app.Controller.GenreController;
 
 public class GenreManagementView extends JPanel {
     private JTable table;
@@ -26,11 +39,6 @@ public class GenreManagementView extends JPanel {
 
     public GenreManagementView() {
         this.controller = new GenreController();
-
-        setTitle("Manajemen Genre");
-        setSize(500, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         initUI();
         loadData();

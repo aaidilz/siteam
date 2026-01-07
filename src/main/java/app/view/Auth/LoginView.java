@@ -31,6 +31,10 @@ public class LoginView extends JFrame {
   private boolean isLoginMode = true;
   private JButton btnLogin;
   private JButton btnSwitch;
+  private int loginWidth = 500;
+  private int loginHeight = 450;
+  private int regisWidth = 500;
+  private int regisHeight = 500;
 
   // Dark theme colors
   private static final Color BG_DARK = new Color(27, 40, 56);
@@ -46,7 +50,8 @@ public class LoginView extends JFrame {
   public LoginView() {
     this.controller = new UserController();
     setTitle("SITEAM - Login");
-    setSize(450, 400);
+    setSize(loginWidth, loginHeight);
+    setResizable(false);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     getContentPane().setBackground(BG_DARK);
@@ -180,6 +185,7 @@ public class LoginView extends JFrame {
       // Hide role selector in login mode
       lblRole.setVisible(false);
       cmbRole.setVisible(false);
+      setSize(loginWidth, loginHeight);
     } else {
       btnLogin.setText("Register");
       btnSwitch.setText("Sudah Punya Akun");
@@ -187,6 +193,7 @@ public class LoginView extends JFrame {
       // Show role selector in register mode
       lblRole.setVisible(true);
       cmbRole.setVisible(true);
+      setSize(regisWidth, regisHeight);
     }
     // Revalidate and repaint to update layout
     revalidate();
