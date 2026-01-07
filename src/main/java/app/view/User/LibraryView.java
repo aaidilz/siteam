@@ -5,7 +5,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Cursor;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -16,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -23,16 +28,16 @@ import javax.swing.table.DefaultTableModel;
 
 import app.Controller.TransactionController;
 
-/**
- * Library View - Game library panel
- * Shows owned games with play and remove functionality
- */
 public class LibraryView extends JPanel {
 
     private JTable table;
     private DefaultTableModel model;
     private TransactionController transactionController;
     private Runnable onDataChanged;
+
+    // Search
+    private JTextField txtSearch;
+    private List<Object[]> libraryCache = new ArrayList<>();
 
     // Dark theme colors
     private static final Color BG_PANEL = new Color(30, 30, 30);
@@ -61,21 +66,13 @@ public class LibraryView extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         setBackground(BG_PANEL);
 
-        // Header
-        JPanel headerPanel = createHeaderPanel();
-        add(headerPanel, BorderLayout.NORTH);
-
-        // Game Table
-        JScrollPane tableScrollPane = createTablePanel();
-        add(tableScrollPane, BorderLayout.CENTER);
-
-        // Action Buttons
-        JPanel actionPanel = createActionPanel();
-        add(actionPanel, BorderLayout.SOUTH);
+        add(createHeaderPanel(), BorderLayout.NORTH);
+        add(createTablePanel(), BorderLayout.CENTER);
+        add(createActionPanel(), BorderLayout.SOUTH);
     }
 
     private JPanel createHeaderPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(10, 0));
         panel.setBackground(BG_PANEL);
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
@@ -84,20 +81,44 @@ public class LibraryView extends JPanel {
         lblTitle.setForeground(TEXT_PRIMARY);
         panel.add(lblTitle, BorderLayout.WEST);
 
-        JLabel lblCount = new JLabel();
-        lblCount.setFont(new Font("Arial", Font.PLAIN, 14));
-        lblCount.setForeground(TEXT_SECONDARY);
-        lblCount.setName("gameCount");
-        panel.add(lblCount, BorderLayout.EAST);
+        txtSearch = new JTextField();
+        txtSearch.setPreferredSize(new Dimension(220, 30));
+        txtSearch.setBackground(BG_TABLE);
+        txtSearch.setForeground(Color.WHITE);
+        txtSearch.setCaretColor(Color.WHITE);
+        txtSearch.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                filterLibraryTable(txtSearch.getText());
+            }
+        });
 
+        JPanel right = new JPanel(new BorderLayout(5, 0));
+        right.setBackground(BG_PANEL);
+
+        JLabel lblSearch = new JLabel("Cari:");
+        lblSearch.setForeground(TEXT_PRIMARY);
+
+        JLabel lblCount = new JLabel();
+        lblCount.setName("gameCount");
+        lblCount.setForeground(TEXT_SECONDARY);
+
+        JPanel searchWrap = new JPanel(new BorderLayout(5, 0));
+        searchWrap.setBackground(BG_PANEL);
+        searchWrap.add(lblSearch, BorderLayout.WEST);
+        searchWrap.add(txtSearch, BorderLayout.CENTER);
+
+        right.add(searchWrap, BorderLayout.NORTH);
+        right.add(lblCount, BorderLayout.SOUTH);
+
+        panel.add(right, BorderLayout.EAST);
         return panel;
     }
 
     private JScrollPane createTablePanel() {
         String[] columns = { "ID", "Nama Game", "Genre", "Developer", "Harga", "Status" };
         model = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(int r, int c) {
                 return false;
             }
         };
@@ -112,69 +133,58 @@ public class LibraryView extends JPanel {
         table.setSelectionBackground(BTN_BLUE);
         table.setSelectionForeground(Color.WHITE);
 
-        // Style header
         table.getTableHeader().setBackground(BG_TABLE_HEADER);
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
-        // Hide ID column
         table.getColumnModel().getColumn(0).setMinWidth(0);
         table.getColumnModel().getColumn(0).setMaxWidth(0);
-        table.getColumnModel().getColumn(0).setWidth(0);
 
-        // Custom renderer for Status column
+        // Status renderer
         table.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                String status = (String) value;
-                if ("Played".equals(status)) {
-                    if (!isSelected) {
-                        c.setForeground(ACCENT_GREEN);
-                    }
-                } else {
-                    if (!isSelected) {
-                        c.setForeground(ACCENT_YELLOW);
-                    }
+            public Component getTableCellRendererComponent(JTable t, Object v,
+                    boolean sel, boolean foc, int r, int c) {
+                Component comp = super.getTableCellRendererComponent(t, v, sel, foc, r, c);
+                if (!sel) {
+                    comp.setForeground("Played".equals(v) ? ACCENT_GREEN : ACCENT_YELLOW);
+                    comp.setBackground(BG_TABLE);
                 }
                 setHorizontalAlignment(SwingConstants.CENTER);
-                return c;
+                return comp;
             }
         });
 
-        // Price column renderer
+        // Price renderer
         table.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                setText(formatCurrency((Integer) value));
+            public Component getTableCellRendererComponent(JTable t, Object v,
+                    boolean sel, boolean foc, int r, int c) {
+                Component comp = super.getTableCellRendererComponent(t, v, sel, foc, r, c);
+                setText(formatCurrency((Integer) v));
                 setHorizontalAlignment(SwingConstants.RIGHT);
-                if (!isSelected) {
-                    c.setForeground(Color.WHITE);
-                    c.setBackground(BG_TABLE);
+                if (!sel) {
+                    comp.setForeground(Color.WHITE);
+                    comp.setBackground(BG_TABLE);
                 }
-                return c;
+                return comp;
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().setBackground(BG_TABLE);
-        scrollPane.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
-
-        return scrollPane;
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.getViewport().setBackground(BG_TABLE);
+        scroll.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+        return scroll;
     }
 
     private JPanel createActionPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(BG_PANEL);
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
-        JButton btnPlay = createStyledButton("Play Game", ACCENT_GREEN);
-        JButton btnRemove = createStyledButton("Remove from Library", ACCENT_RED);
-        JButton btnRefresh = createStyledButton("Refresh", BTN_BLUE);
+        JButton btnPlay = createButton("Play Game", ACCENT_GREEN);
+        JButton btnRemove = createButton("Remove", ACCENT_RED);
+        JButton btnRefresh = createButton("Refresh", BTN_BLUE);
 
         btnPlay.addActionListener(e -> playSelectedGame());
         btnRemove.addActionListener(e -> removeSelectedGame());
@@ -189,81 +199,87 @@ public class LibraryView extends JPanel {
         return panel;
     }
 
-    private JButton createStyledButton(String text, Color bgColor) {
-        JButton btn = new JButton(text);
-        btn.setBackground(bgColor);
-        btn.setForeground(Color.WHITE);
-        btn.setFont(new Font("Arial", Font.BOLD, 12));
-        btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        return btn;
+    private JButton createButton(String text, Color bg) {
+        JButton b = new JButton(text);
+        b.setBackground(bg);
+        b.setForeground(Color.WHITE);
+        b.setFont(new Font("Arial", Font.BOLD, 12));
+        b.setFocusPainted(false);
+        b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return b;
+    }
+
+    private void filterLibraryTable(String keyword) {
+        model.setRowCount(0);
+        String q = keyword.toLowerCase().trim();
+
+        for (Object[] g : libraryCache) {
+            String name = ((String) g[1]).toLowerCase();
+            String genre = ((String) g[2]).toLowerCase();
+            String dev = ((String) g[3]).toLowerCase();
+
+            if (q.isEmpty() || name.contains(q) || genre.contains(q) || dev.contains(q)) {
+                boolean played = (boolean) g[5];
+                model.addRow(new Object[] {
+                        g[0], g[1], g[2], g[3], g[4], played ? "Played" : "Not Played"
+                });
+            }
+        }
+        updateGameCount(model.getRowCount());
+    }
+
+    public void refreshData() {
+        model.setRowCount(0);
+        libraryCache = transactionController.getOwnedGames();
+
+        for (Object[] g : libraryCache) {
+            boolean played = (boolean) g[5];
+            model.addRow(new Object[] {
+                    g[0], g[1], g[2], g[3], g[4], played ? "Played" : "Not Played"
+            });
+        }
+        updateGameCount(libraryCache.size());
+
+        if (!txtSearch.getText().trim().isEmpty()) {
+            filterLibraryTable(txtSearch.getText());
+        }
+    }
+
+    private void updateGameCount(int count) {
+        for (Component c : ((JPanel) getComponent(0)).getComponents()) {
+            if (c instanceof JPanel) {
+                for (Component cc : ((JPanel) c).getComponents()) {
+                    if (cc instanceof JLabel && "gameCount".equals(cc.getName())) {
+                        ((JLabel) cc).setText(count + " game" + (count != 1 ? "s" : "") + " in library");
+                    }
+                }
+            }
+        }
     }
 
     private void playSelectedGame() {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Pilih game yang ingin dimainkan!",
-                    "Pilih Game",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        int r = table.getSelectedRow();
+        if (r < 0) return;
 
-        int gameId = (int) model.getValueAt(selectedRow, 0);
-        String gameName = (String) model.getValueAt(selectedRow, 1);
+        int id = (int) model.getValueAt(r, 0);
+        String name = (String) model.getValueAt(r, 1);
 
-        if (transactionController.playGame(gameId, gameName)) {
+        if (transactionController.playGame(id, name)) {
             refreshData();
         }
     }
 
     private void removeSelectedGame() {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Pilih game yang ingin dihapus!",
-                    "Pilih Game",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        int r = table.getSelectedRow();
+        if (r < 0) return;
 
-        int gameId = (int) model.getValueAt(selectedRow, 0);
-        String gameName = (String) model.getValueAt(selectedRow, 1);
+        int id = (int) model.getValueAt(r, 0);
+        String name = (String) model.getValueAt(r, 1);
 
-        if (transactionController.removeFromLibrary(gameId, gameName)) {
+        if (transactionController.removeFromLibrary(id, name)) {
             refreshData();
-            if (onDataChanged != null) {
-                onDataChanged.run();
-            }
-        }
-    }
-
-    public void refreshData() {
-        model.setRowCount(0);
-        List<Object[]> games = transactionController.getOwnedGames();
-
-        for (Object[] game : games) {
-            int id = (int) game[0];
-            String name = (String) game[1];
-            String genre = (String) game[2];
-            String developer = (String) game[3];
-            int price = (int) game[4];
-            boolean isPlayed = (boolean) game[5];
-            String status = isPlayed ? "Played" : "Not Played";
-
-            model.addRow(new Object[] { id, name, genre, developer, price, status });
-        }
-
-        updateGameCount(games.size());
-    }
-
-    private void updateGameCount(int count) {
-        for (Component c : ((JPanel) getComponent(0)).getComponents()) {
-            if (c instanceof JLabel && "gameCount".equals(c.getName())) {
-                ((JLabel) c).setText(count + " game" + (count != 1 ? "s" : "") + " in library");
-                break;
-            }
+            if (onDataChanged != null) onDataChanged.run();
         }
     }
 
