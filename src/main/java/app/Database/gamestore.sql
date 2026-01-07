@@ -34,8 +34,8 @@ CREATE TABLE mst_game (
     genre_id INT,
     developer_id INT,
     price INT,
-    FOREIGN KEY (genre_id) REFERENCES ref_genre (id),
-    FOREIGN KEY (developer_id) REFERENCES ref_user (id)
+    FOREIGN KEY (genre_id) REFERENCES ref_genre (id) ON DELETE CASCADE,
+    FOREIGN KEY (developer_id) REFERENCES ref_user (id) ON DELETE CASCADE
 );
 
 -- Transactions Table
@@ -46,7 +46,7 @@ CREATE TABLE tr_transaction (
     amount INT,
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_played BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES ref_user (id)
+    FOREIGN KEY (user_id) REFERENCES ref_user (id) ON DELETE CASCADE
 );
 
 -- =====================================================
