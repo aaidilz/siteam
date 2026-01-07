@@ -44,11 +44,37 @@ public class GameModel {
     // ===== READ =====
     public List<Object[]> getAllGame() throws SQLException {
         List<Object[]> data = new ArrayList<>();
-        String sql = "SELECT g.id, g.name, ge.name AS genre, g.price, g.genre_id " +
-                "FROM mst_game g JOIN ref_genre ge ON g.genre_id = ge.id";
+        String sql = "SELECT g.id, g.name, ge.name AS genre, g.price, g.genre_id, u.username AS developer " +
+                "FROM mst_game g " +
+                "JOIN ref_genre ge ON g.genre_id = ge.id " +
+                "JOIN ref_user u ON g.developer_id = u.id";
 
         Statement st = DBConnection.configDB().createStatement();
         ResultSet rs = st.executeQuery(sql);
+
+        while (rs.next()) {
+            data.add(new Object[] {
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("genre"),
+                    rs.getInt("price"),
+                    rs.getInt("genre_id"),
+                    rs.getString("developer")
+            });
+        }
+        return data;
+    }
+
+    public List<Object[]> getGamesByDeveloper(int developerId) throws SQLException {
+        List<Object[]> data = new ArrayList<>();
+        String sql = "SELECT g.id, g.name, ge.name AS genre, g.price, g.genre_id " +
+                "FROM mst_game g " +
+                "JOIN ref_genre ge ON g.genre_id = ge.id " +
+                "WHERE g.developer_id = ?";
+
+        PreparedStatement ps = DBConnection.configDB().prepareStatement(sql);
+        ps.setInt(1, developerId);
+        ResultSet rs = ps.executeQuery();
 
         while (rs.next()) {
             data.add(new Object[] {

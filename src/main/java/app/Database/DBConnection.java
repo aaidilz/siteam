@@ -14,7 +14,7 @@ public class DBConnection {
         try {
             String url = "jdbc:mysql://localhost:3306/gamestore";
             String user = "root";
-            String pass = "";
+            String pass = "root";
 
             DriverManager.registerDriver((Driver) new com.mysql.cj.jdbc.Driver());
             mysqlconfig = DriverManager.getConnection(url, user, pass);

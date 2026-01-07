@@ -6,6 +6,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import app.Model.GameModel;
+import app.Util.Session;
+import app.Model.User;
 
 public class GameController {
     private GameModel model;
@@ -20,6 +22,20 @@ public class GameController {
             return model.getAllGame();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Gagal memuat data game: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Object[]> getGamesByCurrentDeveloper() {
+        User user = Session.getInstance().getUser();
+        if (user == null || !"DEVELOPER".equals(user.getRole())) {
+            return java.util.Collections.emptyList();
+        }
+
+        try {
+            return model.getGamesByDeveloper(user.getId());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal memuat data game developer: " + e.getMessage());
             return null;
         }
     }

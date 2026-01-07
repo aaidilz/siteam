@@ -99,4 +99,120 @@ public class TransactionController {
             return 0;
         }
     }
+
+    /**
+     * Get all games owned by current user with details
+     * Returns list of: [id, name, genre, price, is_played]
+     */
+    public List<Object[]> getOwnedGames() {
+        if (Session.getInstance().getUser() == null)
+            return new java.util.ArrayList<>();
+        int userId = Session.getInstance().getUser().getId();
+        try {
+            return modelTransaction.getOwnedGamesWithDetails(userId);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal memuat library: " + e.getMessage());
+            return new java.util.ArrayList<>();
+        }
+    }
+
+    /**
+     * Simulate playing a game and mark it as played
+     */
+    public boolean playGame(int gameId, String gameName) {
+        if (Session.getInstance().getUser() == null) {
+            JOptionPane.showMessageDialog(null, "Anda harus login!");
+            return false;
+        }
+
+        int userId = Session.getInstance().getUser().getId();
+
+        try {
+            // Mark game as played
+            modelTransaction.markGameAsPlayed(userId, gameId);
+
+            // Show "playing" simulation dialog
+            JOptionPane.showMessageDialog(null,
+                    "Memainkan " + gameName + "...\n\n" +
+                            "Game sedang berjalan!\n" +
+                            "(Ini adalah simulasi)",
+                    "Playing Game",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            return true;
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal memainkan game: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Remove game from library with warning
+     * Returns true if game was removed
+     */
+    public boolean removeFromLibrary(int gameId, String gameName) {
+        if (Session.getInstance().getUser() == null) {
+            JOptionPane.showMessageDialog(null, "Anda harus login!");
+            return false;
+        }
+
+        int userId = Session.getInstance().getUser().getId();
+
+        try {
+            boolean isPlayed = modelTransaction.isGamePlayed(userId, gameId);
+
+            // Build warning message
+            String warningMessage;
+            if (isPlayed) {
+                warningMessage = "PERINGATAN\n\n" +
+                        "Game \"" + gameName + "\" sudah pernah dimainkan.\n\n" +
+                        "Jika Anda menghapus game ini dari library:\n" +
+                        "- Dana pembelian TIDAK AKAN dikembalikan\n" +
+                        "- Anda harus membeli ulang jika ingin memainkan lagi\n\n" +
+                        "Yakin ingin menghapus game ini?";
+            } else {
+                warningMessage = "PERINGATAN\n\n" +
+                        "Anda akan menghapus \"" + gameName + "\" dari library.\n\n" +
+                        "Meskipun game belum pernah dimainkan:\n" +
+                        "- Dana pembelian TIDAK AKAN dikembalikan\n" +
+                        "- Anda harus membeli ulang jika ingin memainkan\n\n" +
+                        "Yakin ingin menghapus game ini?";
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    warningMessage,
+                    "Konfirmasi Hapus Game",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                modelTransaction.removeGameFromLibrary(userId, gameId);
+                JOptionPane.showMessageDialog(null,
+                        "Game \"" + gameName + "\" telah dihapus dari library.",
+                        "Game Dihapus",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
+            return false;
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Gagal menghapus game: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Check if a specific game has been played
+     */
+    public boolean isGamePlayed(int gameId) {
+        if (Session.getInstance().getUser() == null)
+            return false;
+        int userId = Session.getInstance().getUser().getId();
+        try {
+            return modelTransaction.isGamePlayed(userId, gameId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
