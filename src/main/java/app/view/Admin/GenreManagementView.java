@@ -1,36 +1,26 @@
 package app.view.Admin;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-
 import app.Controller.GenreController;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
 
 public class GenreManagementView extends JPanel {
     private JTable table;
     private DefaultTableModel model;
     private GenreController controller;
+    private JTextField searchField;
+    private TableRowSorter<DefaultTableModel> sorter;
 
-    // Dark theme colors
     private static final Color BG_PANEL = new Color(30, 30, 30);
     private static final Color BG_TABLE = new Color(45, 45, 45);
     private static final Color BG_TABLE_HEADER = new Color(35, 35, 35);
     private static final Color BORDER_COLOR = new Color(60, 60, 60);
-    // private static final Color TEXT_PRIMARY = new Color(200, 200, 200);
     private static final Color ACCENT_GREEN = new Color(76, 175, 80);
     private static final Color ACCENT_ORANGE = new Color(255, 152, 0);
     private static final Color ACCENT_RED = new Color(244, 67, 54);
@@ -49,11 +39,30 @@ public class GenreManagementView extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         setBackground(BG_PANEL);
 
-        // Toolbar
+        add(createTablePanel(), BorderLayout.CENTER);
         add(createToolbar(), BorderLayout.NORTH);
 
-        // Table
-        add(createTablePanel(), BorderLayout.CENTER);
+        setupSearch();
+    }
+
+    private void setupSearch() {
+        sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String text = searchField.getText();
+                if (text.trim().length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    try {
+                        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                    } catch (java.util.regex.PatternSyntaxException ex) {
+                    }
+                }
+            }
+        });
     }
 
     private JPanel createToolbar() {
@@ -81,6 +90,25 @@ public class GenreManagementView extends JPanel {
         panel.add(btnRefresh);
         panel.add(Box.createHorizontalGlue());
 
+        JLabel lblSearch = new JLabel("Cari: ");
+        lblSearch.setForeground(Color.WHITE);
+        lblSearch.setFont(new Font("Arial", Font.BOLD, 12));
+
+        searchField = new JTextField(15);
+        searchField.setMaximumSize(new Dimension(200, 30));
+        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setBackground(BG_TABLE);
+        searchField.setForeground(Color.WHITE);
+        searchField.setCaretColor(Color.WHITE);
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER_COLOR),
+            BorderFactory.createEmptyBorder(0, 5, 0, 5)
+        ));
+
+        panel.add(lblSearch);
+        panel.add(Box.createRigidArea(new Dimension(10, 0)));
+        panel.add(searchField);
+
         return panel;
     }
 
@@ -103,7 +131,6 @@ public class GenreManagementView extends JPanel {
         table.setSelectionBackground(BTN_BLUE);
         table.setSelectionForeground(Color.WHITE);
 
-        // Style header
         table.getTableHeader().setBackground(BG_TABLE_HEADER);
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
