@@ -1,13 +1,24 @@
-package app.View.Admin;
+package app.view.Admin;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import app.Controller.UserController;
-import app.Util.Session;
 import app.Model.User;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
+import app.Util.Session;
 
 public class UserManagementView extends JFrame {
     private JTable table;
@@ -25,9 +36,12 @@ public class UserManagementView extends JFrame {
     }
 
     private JPanel createPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10,10));
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
         model = new DefaultTableModel(new Object[] { "ID", "Username", "Role" }, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         table = new JTable(model);
         panel.add(new JScrollPane(table), BorderLayout.CENTER);
@@ -68,7 +82,10 @@ public class UserManagementView extends JFrame {
 
     private void onEdit() {
         int r = table.getSelectedRow();
-        if (r < 0) { JOptionPane.showMessageDialog(this, "Pilih user untuk diedit"); return; }
+        if (r < 0) {
+            JOptionPane.showMessageDialog(this, "Pilih user untuk diedit");
+            return;
+        }
         int id = (int) model.getValueAt(r, 0);
         String username = (String) model.getValueAt(r, 1);
         String role = (String) model.getValueAt(r, 2);
@@ -77,15 +94,20 @@ public class UserManagementView extends JFrame {
         JComboBox<String> cmbRole = new JComboBox<>(new String[] { "USER", "DEVELOPER", "ADMIN" });
         cmbRole.setSelectedItem(role);
 
-        JPanel p = new JPanel(new GridLayout(2,2,5,5));
-        p.add(new JLabel("Username:")); p.add(txtUsername);
-        p.add(new JLabel("Role:")); p.add(cmbRole);
+        JPanel p = new JPanel(new GridLayout(2, 2, 5, 5));
+        p.add(new JLabel("Username:"));
+        p.add(txtUsername);
+        p.add(new JLabel("Role:"));
+        p.add(cmbRole);
 
         int ok = JOptionPane.showConfirmDialog(this, p, "Edit User", JOptionPane.OK_CANCEL_OPTION);
         if (ok == JOptionPane.OK_OPTION) {
             String newUsername = txtUsername.getText().trim();
             String newRole = (String) cmbRole.getSelectedItem();
-            if (newUsername.isEmpty()) { JOptionPane.showMessageDialog(this, "Username tidak boleh kosong"); return; }
+            if (newUsername.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Username tidak boleh kosong");
+                return;
+            }
             controller.updateUser(id, newUsername, newRole);
             refreshData();
         }
@@ -93,7 +115,10 @@ public class UserManagementView extends JFrame {
 
     private void onDelete() {
         int r = table.getSelectedRow();
-        if (r < 0) { JOptionPane.showMessageDialog(this, "Pilih user untuk dihapus"); return; }
+        if (r < 0) {
+            JOptionPane.showMessageDialog(this, "Pilih user untuk dihapus");
+            return;
+        }
         int id = (int) model.getValueAt(r, 0);
         User current = Session.getInstance().getUser();
 

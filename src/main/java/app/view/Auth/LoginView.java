@@ -86,9 +86,9 @@ public class LoginView extends JFrame {
 
       // Open appropriate view based on role
       if (role.equalsIgnoreCase("DEVELOPER")) {
-        new app.View.Developer.DashboardDevView().setVisible(true);
+        new app.view.Developer.DashboardDevView().setVisible(true);
       } else if (role.equalsIgnoreCase("ADMIN")) {
-        new app.View.Admin.AdminDashboardView().setVisible(true);
+        new app.view.Admin.AdminDashboardView().setVisible(true);
       } else {
         new app.view.User.HomeUserView().setVisible(true);
       }

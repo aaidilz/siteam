@@ -1,9 +1,17 @@
-package app.View.Admin;
+package app.view.Admin;
+
+import java.awt.Font;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import app.Util.Session;
-import app.View.Auth.LoginView;
-import javax.swing.*;
-import java.awt.*;
+import app.view.Auth.LoginView;
 
 public class AdminDashboardView extends JFrame {
 
@@ -12,7 +20,7 @@ public class AdminDashboardView extends JFrame {
         setSize(400, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         initUI();
     }
 
@@ -23,7 +31,7 @@ public class AdminDashboardView extends JFrame {
 
         JLabel lblWelcome = new JLabel("Welcome, Admin", SwingConstants.CENTER);
         lblWelcome.setFont(new Font("Arial", Font.BOLD, 18));
-        
+
         JButton btnUserManagement = new JButton("Manajemen User");
         JButton btnGenreManagement = new JButton("Manajemen Genre");
         JButton btnLogout = new JButton("Logout");

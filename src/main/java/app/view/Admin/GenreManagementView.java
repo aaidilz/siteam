@@ -1,10 +1,19 @@
-package app.View.Admin;
+package app.view.Admin;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import app.Controller.GenreController;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
 
 public class GenreManagementView extends JFrame {
     private JTable table;
@@ -13,12 +22,12 @@ public class GenreManagementView extends JFrame {
 
     public GenreManagementView() {
         this.controller = new GenreController();
-        
+
         setTitle("Manajemen Genre");
         setSize(500, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
+
         initUI();
         loadData();
     }
@@ -28,7 +37,7 @@ public class GenreManagementView extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Table
-        String[] columns = {"ID", "Nama Genre"};
+        String[] columns = { "ID", "Nama Genre" };
         model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
